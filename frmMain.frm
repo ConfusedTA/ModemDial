@@ -83,8 +83,8 @@ Begin VB.Form frmMain
       Begin VB.ComboBox cboComPortSpeed 
          Height          =   315
          Left            =   4560
+         Style           =   2  'Dropdown List
          TabIndex        =   22
-         Text            =   "cboComPortSpeed"
          Top             =   240
          Width           =   1095
       End
