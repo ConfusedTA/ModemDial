@@ -67,8 +67,8 @@ Begin VB.Form frmMain
       EndProperty
    End
    Begin MSCommLib.MSComm MSComm1 
-      Left            =   5280
-      Top             =   0
+      Left            =   2160
+      Top             =   2880
       _ExtentX        =   1005
       _ExtentY        =   1005
       _Version        =   393216
@@ -80,6 +80,14 @@ Begin VB.Form frmMain
       TabIndex        =   2
       Top             =   120
       Width           =   5775
+      Begin VB.ComboBox cboComPortSpeed 
+         Height          =   315
+         Left            =   4560
+         TabIndex        =   22
+         Text            =   "cboComPortSpeed"
+         Top             =   240
+         Width           =   1095
+      End
       Begin VB.OptionButton optWaitTime 
          Caption         =   "Minutes"
          Height          =   255
@@ -130,7 +138,7 @@ Begin VB.Form frmMain
          Style           =   2  'Dropdown List
          TabIndex        =   11
          Top             =   240
-         Width           =   2175
+         Width           =   1215
       End
       Begin VB.CommandButton cmdSaveSettings 
          Caption         =   "Save Settings"
@@ -154,7 +162,7 @@ Begin VB.Form frmMain
          TabIndex        =   8
          Text            =   "txtPhoneNumber"
          Top             =   720
-         Width           =   2175
+         Width           =   2415
       End
       Begin VB.CheckBox chkShowErrors 
          Caption         =   "Show Errors"
@@ -279,6 +287,7 @@ Private Sub cmdSaveSettings_Click()
 On Error GoTo cmdSaveSettings_Click_Error
 
     WriteINI App.Path & "\settings.ini", "Settings", "COMPortIndex", cboComPort.ListIndex
+    WriteINI App.Path & "\settings.ini", "Settings", "COMPortSpeedIndex", cboComPortSpeed.ListIndex
     WriteINI App.Path & "\settings.ini", "Settings", "PhoneNumber", txtPhoneNumber.Text
     WriteINI App.Path & "\settings.ini", "Settings", "ConnectedTime", txtConnectedTime.Text
     If optConnectedTime(0).Value = True Then
@@ -391,6 +400,14 @@ Dim i As Integer
         End If
     Next i
 
+    cboComPortSpeed.AddItem ("1200")
+    cboComPortSpeed.AddItem ("4800")
+    cboComPortSpeed.AddItem ("9600")
+    cboComPortSpeed.AddItem ("19200")
+    cboComPortSpeed.AddItem ("38400")
+    cboComPortSpeed.AddItem ("57600")
+    cboComPortSpeed.AddItem ("115200")
+    
     ConnectTime = 0
     DisconnectTime = 0
 
@@ -417,6 +434,7 @@ On Error GoTo LoadSettings_Error
 
     If FileExists(App.Path & "\settings.ini") Then
         cboComPort.ListIndex = ReadINI(App.Path & "\settings.ini", "Settings", "COMPortIndex", vbString)
+        cboComPortSpeed.ListIndex = ReadINI(App.Path & "\settings.ini", "Settings", "COMPortSpeedIndex", vbString)
         txtPhoneNumber.Text = ReadINI(App.Path & "\settings.ini", "Settings", "PhoneNumber", vbString)
         txtConnectedTime.Text = ReadINI(App.Path & "\settings.ini", "Settings", "ConnectedTime", vbInteger)
         optConnectedTime(ReadINI(App.Path & "\settings.ini", "Settings", "ConnectedTimeUnit", vbInteger)).Value = True
@@ -436,6 +454,8 @@ On Error GoTo LoadSettings_Error
         End If
         
         If Default = True Then
+            cboComPort.ListIndex = -1
+            cboComPortSpeed.ListIndex = -1
             txtPhoneNumber.Text = "01234567890"
             txtConnectedTime.Text = 60
             optConnectedTime(0).Value = True
@@ -520,7 +540,7 @@ Dim Protocol As Integer
 Dim ret
 
 Port = cboComPort.Text
-PortSpeed = 9600
+PortSpeed = cboComPortSpeed.Text
 Protocol = 0
 
 If ComPortExists(Port) Then
